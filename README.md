@@ -1,6 +1,4 @@
 ## About
-[![Build Status](https://travis-ci.org/martinlindhe/php-mb-helpers.png?branch=master)](https://travis-ci.org/martinlindhe/php-mb-helpers)
-[![Code Coverage](https://scrutinizer-ci.com/g/martinlindhe/php-mb-helpers/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/martinlindhe/php-mb-helpers)
 
 Provides some missing (?) multibyte functions.
 
@@ -17,7 +15,7 @@ or add manually to composer.json:
 ```json
 {
     "require": {
-        "martinlindhe/php-mb-helpers": "~0.1"
+        "psyhomo/php-mb-helpers": "~0.2"
     }
 }
 ```
