@@ -50,6 +50,11 @@ class mbHelpersTest extends TestCase {
 
 	}
 
+	function test_mb_str_split_exception() {
+		$this->expectException(\Exception::class);
+		mb_str_split("aaa", -1);
+	}
+
 	function test_mb_str_split() {
 		$this->assertEquals(array('b', 'ö', 'b'), mb_str_split('böb'));
 
