@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 class mbHelpersTest extends TestCase {
 
 	function test_mb_ucwords() {
+		$this->assertEquals('', mb_ucwords(''));
+
 		$this->assertEquals('Åäö', mb_ucwords('åäö'));
 		$this->assertEquals('Åäö Öäå', mb_ucwords('åäö öäå'));
 
@@ -15,6 +17,7 @@ class mbHelpersTest extends TestCase {
 	}
 
 	function test_mb_ucfirst() {
+		$this->assertEquals('', mb_ucfirst(''));
 		$this->assertEquals('Åäö', mb_ucfirst('åäö'));
 		$this->assertEquals('Åäö öäå', mb_ucfirst('åäö öäå'));
 
@@ -45,13 +48,13 @@ class mbHelpersTest extends TestCase {
 
 	function test_mb_count_chars_unsupported_mode() {
 
-		$this->expectException(\Exception::class);
+		$this->expectException(Exception::class);
 		mb_count_chars('böb', 2);
 
 	}
 
 	function test_mb_str_split_exception() {
-		$this->expectException(\Exception::class);
+		$this->expectException(Exception::class);
 		mb_str_split("aaa", -1);
 	}
 
@@ -66,6 +69,36 @@ class mbHelpersTest extends TestCase {
 
 		$this->assertEquals(str_split('bobby'), mb_str_split('bobby'));
 		$this->assertEquals(str_split(''), mb_str_split(''));
+	}
+
+	function test_mb_word_wrap() {
+
+		$text = 'aaaaabbbbb';
+
+		$this->assertEquals('', mb_wordwrap(""));
+
+		$this->assertEquals("aaaaa\r\nbbbbb", mb_wordwrap($text, 5, "\r\n", true));
+		$this->assertEquals("aaaaabbbbb", mb_wordwrap($text, 5, "\r\n", false));
+		$this->assertEquals("öäåÅ\näö", mb_wordwrap('öäåÅäö', 4, "\n", true));
+		$this->assertEquals("öäå\r\nÅäö", mb_wordwrap('öäå Åäö', 3, "\r\n", true));
+		$this->assertEquals("öäåÅ\nöääö\nöä", mb_wordwrap("öäåÅ\nöääö\nöä", 4, "\n", false));
+		$this->assertEquals("öäåÅ\nöääööääö\nöä", mb_wordwrap("öäåÅ\nöääööääö\nöä", 4, "\n", false));
+		$this->assertEquals("öäåÅ\nö\nääööääö\nöä", mb_wordwrap("öäåÅ ö ääööääö öä", 4, "\n", false));
+
+	}
+
+	function test_mb_word_wrap_exceptions_1() {
+
+		$this->expectError();
+		$this->assertEquals('', mb_wordwrap('AAA', 0, ''));
+
+	}
+
+	function test_mb_word_wrap_exceptions_2() {
+
+		$this->expectError();
+		$this->assertEquals('', mb_wordwrap('AAA', 2, ''));
+
 	}
 
 }

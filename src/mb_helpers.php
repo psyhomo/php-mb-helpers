@@ -159,3 +159,85 @@ if (!function_exists('mb_str_split')) {
 	}
 
 }
+
+if (!function_exists('mb_wordwrap')) {
+
+	/**
+	 * Created: 23.01.2019
+	 * @author Psyhomo aka E.V.Ryabinin
+	 * @param string $str Breaking text
+	 * @param int $length Length
+	 * @param string $eol EOL
+	 * @param bool $cut Strict cut
+	 * @param string $encoding
+	 * @return string
+	 */
+	function mb_wordwrap(string $str, int $length = 75, string $eol = "\r\n", bool $cut = false, string $encoding = 'utf-8'): string {
+
+		if ($str === '') {
+			return '';
+		}
+
+		if ($length <= 0) {
+			trigger_error('Cannot cut when width is zero', E_USER_ERROR);
+		}
+		elseif ($eol === '') {
+			trigger_error('Break string cannot be empty', E_USER_ERROR);
+		}
+
+		if (strlen($str) === mb_strlen($str, $encoding)) {
+			return wordwrap($str, $length, $eol, $cut);
+		}
+
+		$stringWidth = mb_strlen($str, $encoding);
+		$breakWidth = mb_strlen($eol, $encoding);
+
+		$result = '';
+		$lastStart = $lastSpace = 0;
+
+		for ($current = 0; $current < $stringWidth; $current++) {
+			$char = mb_substr($str, $current, 1, $encoding);
+
+			$possibleBreak = $char;
+			if ($breakWidth !== 1) {
+				$possibleBreak = mb_substr($str, $current, $breakWidth, $encoding);
+			}
+
+			if ($possibleBreak === $eol) {
+				$result .= mb_substr($str, $lastStart, $current - $lastStart + $breakWidth, $encoding);
+				$current += $breakWidth - 1;
+				$lastStart = $lastSpace = $current + 1;
+				continue;
+			}
+
+			if ($char === ' ') {
+				if ($current - $lastStart >= $length) {
+					$result .= mb_substr($str, $lastStart, $current - $lastStart, $encoding) . $eol;
+					$lastStart = $current + 1;
+				}
+
+				$lastSpace = $current;
+				continue;
+			}
+
+			if ($current - $lastStart >= $length && $cut && $lastStart >= $lastSpace) {
+				$result .= mb_substr($str, $lastStart, $current - $lastStart, $encoding) . $eol;
+				$lastStart = $lastSpace = $current;
+				continue;
+			}
+
+			if ($current - $lastStart >= $length && $lastStart < $lastSpace) {
+				$result .= mb_substr($str, $lastStart, $lastSpace - $lastStart, $encoding) . $eol;
+				$lastStart = $lastSpace = $lastSpace + 1;
+				continue;
+			}
+		}
+
+		if ($lastStart !== $current) {
+			$result .= mb_substr($str, $lastStart, $current - $lastStart, $encoding);
+		}
+
+		return $result;
+	}
+
+}
