@@ -3,31 +3,31 @@
 if (!function_exists('mb_ucwords')) {
 
 	/**
-	 * @param string $str
+	 * {@link ucwords()} function for multibyte character encodings
+	 * Modified: 03.09.2020 by Psyhomo aka E.V.Ryabinin
+	 * @param string $string
 	 * @param string $encoding
-	 * @return string Uc Words
+	 * @return string
 	 */
-	function mb_ucwords($str, $encoding = 'UTF-8') {
-		$upper = true;
+	function mb_ucwords(string $string, string $encoding = 'utf-8'): string {
 
-		$res = '';
-
-		for ($i = 0; $i < mb_strlen($str, $encoding); $i++) {
-			$c = mb_substr($str, $i, 1, $encoding);
-
-			if ($upper) {
-				$c = mb_convert_case($c, MB_CASE_UPPER, $encoding);
-				$upper = false;
-			}
-
-			if ($c == ' ') {
-				$upper = true;
-			}
-
-			$res .= $c;
+		if (empty($string)) {
+			return '';
 		}
 
-		return $res;
+		$tab = [];
+
+		// Split the phrase by any number of space characters, which include " ", \r, \t, \n and \f
+		$words = preg_split('/[\s]+/ui', $string);
+		if (!empty($words)) {
+			foreach ($words as $key => $word) {
+				$tab[ $key ] = mb_ucfirst($word, $encoding);
+			}
+		}
+
+		$string = (!empty($tab)) ? implode(' ', $tab) : '';
+
+		return $string;
 	}
 
 }
@@ -35,15 +35,23 @@ if (!function_exists('mb_ucwords')) {
 if (!function_exists('mb_ucfirst')) {
 
 	/**
-	 * @param string $str
+	 * {@link ucfirst()} function for multibyte character encodings
+	 * Modified: 03.09.2020 by Psyhomo aka E.V.Ryabinin
+	 * @param string $string
 	 * @param string $encoding
-	 * @return string Uc first
+	 * @return string
 	 */
-	function mb_ucfirst($str, $encoding = 'UTF-8') {
-		$firstLetter = mb_substr($str, 0, 1, $encoding);
-		$rest = mb_substr($str, 1, mb_strlen($str, $encoding), $encoding);
+	function mb_ucfirst(string $string, string $encoding = 'utf-8'): string {
 
-		return mb_strtoupper($firstLetter, $encoding) . $rest;
+		if (empty($string)) {
+			return '';
+		}
+
+		$strLen = mb_strlen($string, $encoding);
+		$firstLetter = mb_substr($string, 0, 1, $encoding);
+		$then = mb_substr($string, 1, $strLen - 1, $encoding);
+
+		return mb_strtoupper($firstLetter, $encoding) . $then;
 	}
 
 }
